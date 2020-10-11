@@ -18,6 +18,7 @@ public class BattleshipGUI extends JFrame {
 	private JLabel ships;
 	private JLabel tableroPosicion;
 	private JLabel tableroPrincipal;
+	private BoardGUI board1 = new BoardGUI ();
 	
 	private Font font;
 	
@@ -50,6 +51,7 @@ public class BattleshipGUI extends JFrame {
 		add(ships, BorderLayout.WEST);
 		
 		tableroPosicion = new JLabel(".          Aqui van los barcos aliados");
+		add(board1, BorderLayout.CENTER);
 		tableroPosicion.setFont(font);
 		add(tableroPosicion, BorderLayout.CENTER);
 		

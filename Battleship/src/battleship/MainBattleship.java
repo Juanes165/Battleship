@@ -6,7 +6,7 @@ public class MainBattleship {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		/*
+		
 		EventQueue.invokeLater(new Runnable() {
 
 			@Override
@@ -16,7 +16,7 @@ public class MainBattleship {
 			}
 
 		});
-		*/
+		
 		Ship ship = new Ship(2);
 		//Ship ship2 = new Ship(4);
 		ship.setShipPosition(6, 3, false);
