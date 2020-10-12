@@ -4,7 +4,6 @@ public class Ship {
 	private int[][] position;
 	public boolean[] damagedParts;
 	private int size;
-	private boolean isSunk;
 	
 	public Ship(int size) {
 		
@@ -50,22 +49,16 @@ public class Ship {
 	
 	
 	
-	public void shoot(int x, int y) {
+	public boolean shoot(int x, int y) {
 		
 		for(int i = 0; i < size; i++) {
 			if(position[i][0] == x && position[i][1] == y) {
 				damagedParts[i] = true;
+				return true;
 			}
 		}
 		
-		boolean b = true;
-		for(int i = 0; i < size; i++) {
-			if(!damagedParts[i]) {
-				b = false;
-			}
-		isSunk = b;
-		}
-		
+		return false;		
 	}
 	
 	
@@ -82,6 +75,13 @@ public class Ship {
 	
 	
 	public boolean isSunk() {
+		boolean isSunk = true;
+		
+		for(int i = 0; i < size; i++) {
+			if(!damagedParts[i]) {
+				isSunk = false;
+			}
+		}
 		return isSunk;
 	}
 }

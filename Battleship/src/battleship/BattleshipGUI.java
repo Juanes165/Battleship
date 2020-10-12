@@ -27,16 +27,17 @@ public class BattleshipGUI extends JFrame {
 	//un game control
 	//jugadores
 	//clase de tablero GUI
-	public static final String shoot = "src/images/shoot.png";
+	public static final String shootImg = "src/images/shoot.png";
 	public static final String ship = "src/images/";
 	
 	private Listener listener;
 	
-	private BufferedImage bufferedImage = null;
+	private BufferedImage shoot = null;
 	private BufferedImage ship1 = null;
 	private BufferedImage ship2 = null;
 	private BufferedImage ship3 = null;
 	private BufferedImage ship4 = null;
+	private BufferedImage subImage = null;
 	
 	private Titles title;
 	private Titles ships;
@@ -50,7 +51,7 @@ public class BattleshipGUI extends JFrame {
 	public BattleshipGUI() {
 		
 		try {
-			bufferedImage = ImageIO.read(new File(shoot));
+			shoot = ImageIO.read(new File(shootImg));
 			ship1 = ImageIO.read(new File(ship + "1.png"));
 			ship2 = ImageIO.read(new File(ship + "2.png"));
 			ship3 = ImageIO.read(new File(ship + "3.png"));
@@ -109,6 +110,28 @@ public class BattleshipGUI extends JFrame {
 		add(ships, constraints);
 		
 		board1.setBorder(new TitledBorder("Tus barcos"));
+
+		for(int i = 0; i < 4; i++) {
+			board1.getButtons()[1][i + 1].setIcon(new ImageIcon(ship1));
+		}
+		for(int i = 0; i < 2; i++) {
+			subImage = ship2.getSubimage(0, 50 * i, 50, 50);
+			board1.getButtons()[i + 1][5].setIcon(new ImageIcon(subImage));
+			board1.getButtons()[i + 1][6].setIcon(new ImageIcon(subImage));
+			board1.getButtons()[i + 1][7].setIcon(new ImageIcon(subImage));
+		}
+		
+		for(int i = 0; i < 3; i++) {
+			subImage = ship3.getSubimage(0, 50 * i, 50, 50);
+			board1.getButtons()[i + 1][8].setIcon(new ImageIcon(subImage));
+			board1.getButtons()[i + 1][9].setIcon(new ImageIcon(subImage));
+		}
+		
+		for(int i = 0; i < 4; i++) {
+			subImage = ship4.getSubimage(0, 50 * i, 50, 50);
+			board1.getButtons()[i + 1][10].setIcon(new ImageIcon(subImage));
+		}
+
 		constraints.gridx=1;
 		constraints.gridy=1;
 		constraints.gridwidth=1;
@@ -145,7 +168,18 @@ public class BattleshipGUI extends JFrame {
 				for(int j = 1; j < 11; j++) {
 					if(board2.getButtons()[i][j] == event.getSource()) {
 						System.out.println("El botón " + i + ", " + j + " funciona");
-						ImageIcon shootIcon = new ImageIcon(bufferedImage);
+						ImageIcon shootIcon = new ImageIcon(shoot);
+						board2.getButtons()[i][j].setIcon(shootIcon);
+					}
+
+				}
+			}
+			
+			for(int i = 1; i < 11; i++) {
+				for(int j = 1; j < 11; j++) {
+					if(board2.getButtons()[i][j] == event.getSource()) {
+						System.out.println("El botón " + i + ", " + j + " funciona");
+						ImageIcon shootIcon = new ImageIcon(shoot);
 						board2.getButtons()[i][j].setIcon(shootIcon);
 					}
 

@@ -23,45 +23,75 @@ public class Board {
 		ships[7] = new Ship(3);
 		ships[8] = new Ship(3);
 		ships[9] = new Ship(4);
-	}
-	
-	
-	public void setShip(int ship, int x, int y, boolean isVertical) {
-		ships[ship].setShipPosition(x, y, isVertical);
-		for(int i = 0; i < ships[ship].getSize(); i++) {
-			board[ships[ship].getPosition()[i][0]][ships[ship].getPosition()[i][1]] = 1;
+		
+		for(int i = 1; i < 11; i++) {
+			this.setShip(1, i, i - 1, true);
 		}
 	}
 	
 	
 	
-	public void shoot(int x, int y) {
-		if(board[x][y] == 1) {
-			for(int i = 0; i < 10; i++) {
-				ships[i].shoot(x, y);
-			}
-		}
-		board[x][y] = 2;
-	}
-	
-	
-	
-	public boolean isThereAShip(Ship ship, int x, int y, boolean isVertical) {
-		boolean thereIsAShip = false;
-		if(isVertical) {
-			for(int i = 0; i < ship.getSize(); i++) {
-				if(board[x][y + i] == 1) {
-					thereIsAShip = true;
-				}
-			}
+	public void setShip(int x, int y, int shipNumber, boolean isVertical) {
+		Ship ship = ships[shipNumber];
+		int[][] shipPosition = ship.getPosition();
+		
+		if(isThereAShip(ship.getSize(), x, y, isVertical)) {
+			System.out.println("Hay un barco");
 		}
 		else {
 			for(int i = 0; i < ship.getSize(); i++) {
+				board[shipPosition[i][0]][shipPosition[i][1]] = 0;
+			}
+			ship.setShipPosition(x, y, isVertical);
+			for(int i = 0; i < ship.getSize(); i++) {
+				board[shipPosition[i][0]][shipPosition[i][1]] = 1;
+			}
+		}
+		
+	}
+	
+	
+	
+	public boolean isThereAShip(int size, int x, int y, boolean isVertical) {
+		
+		boolean thereIsAShip = false;
+		if(isVertical) {
+			if(size + x > 10) {
+				x = 11 - size;
+			}
+			for(int i = 0; i < size; i++) {
 				if(board[x + i][y] == 1) {
 					thereIsAShip = true;
 				}
 			}
 		}
+		else {
+			if(size + y > 10) {
+				y = 11 - size;
+			}
+			for(int i = 0; i < size; i++) {
+				if(board[x][y + i] == 1) {
+					thereIsAShip = true;
+				}
+			}
+		}
 		return thereIsAShip;
+	}
+	
+	
+	
+	public boolean shoot(int x, int y) {
+		if(board[x][y] == 1) {
+			for(int i = 0; i < 10; i++) {
+				if(ships[i].shoot(x, y)) {
+					board[x][y] = 3;
+					return ships[i].isSunk();
+				}
+			}
+		}
+		else if(board[x][y] == 0) {
+			board[x][y] = 2;
+		}
+		return false;
 	}
 }
