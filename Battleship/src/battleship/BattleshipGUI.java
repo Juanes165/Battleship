@@ -28,17 +28,21 @@ public class BattleshipGUI extends JFrame {
 	//jugadores
 	//clase de tablero GUI
 	public static final String shootImg = "src/images/shoot.png";
-	public static final String ship = "src/images/";
+	public static final String shipFile = "src/images/";
 	
 	private Listener listener;
 	
 	private BufferedImage shoot = null;
 	private BufferedImage ship1 = null;
 	private BufferedImage ship2 = null;
+	private BufferedImage ship2H = null;
 	private BufferedImage ship3 = null;
+	private BufferedImage ship3H = null;
 	private BufferedImage ship4 = null;
+	private BufferedImage ship4H = null;
 	private BufferedImage subImage = null;
 	
+	private Board controlBoard1, controlBoard2;
 	private Titles title;
 	private Titles ships;
 	private JLabel tableroPosicion;
@@ -52,16 +56,21 @@ public class BattleshipGUI extends JFrame {
 		
 		try {
 			shoot = ImageIO.read(new File(shootImg));
-			ship1 = ImageIO.read(new File(ship + "1.png"));
-			ship2 = ImageIO.read(new File(ship + "2.png"));
-			ship3 = ImageIO.read(new File(ship + "3.png"));
-			ship4 = ImageIO.read(new File(ship + "4.png"));
+			ship1 = ImageIO.read(new File(shipFile + "1.png"));
+			ship2 = ImageIO.read(new File(shipFile + "2.png"));
+			ship3 = ImageIO.read(new File(shipFile + "3.png"));
+			ship4 = ImageIO.read(new File(shipFile + "4.png"));
+			ship2H = ImageIO.read(new File(shipFile + "2H.png"));
+			ship3H = ImageIO.read(new File(shipFile + "3H.png"));
+			ship4H = ImageIO.read(new File(shipFile + "4H.png"));
 		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "No se encontraron los archivos");
 		}
 		
+		controlBoard1 = new Board();
+		controlBoard2 = new Board();
 		title = new Titles("BATTLESHIP", 32, Color.WHITE);
 		ships = new Titles("BARCOS", 32, Color.WHITE);
 		board1 = new BoardGUI();
@@ -110,28 +119,8 @@ public class BattleshipGUI extends JFrame {
 		add(ships, constraints);
 		
 		board1.setBorder(new TitledBorder("Tus barcos"));
-
-		for(int i = 0; i < 4; i++) {
-			board1.getButtons()[1][i + 1].setIcon(new ImageIcon(ship1));
-		}
-		for(int i = 0; i < 2; i++) {
-			subImage = ship2.getSubimage(0, 50 * i, 50, 50);
-			board1.getButtons()[i + 1][5].setIcon(new ImageIcon(subImage));
-			board1.getButtons()[i + 1][6].setIcon(new ImageIcon(subImage));
-			board1.getButtons()[i + 1][7].setIcon(new ImageIcon(subImage));
-		}
-		
-		for(int i = 0; i < 3; i++) {
-			subImage = ship3.getSubimage(0, 50 * i, 50, 50);
-			board1.getButtons()[i + 1][8].setIcon(new ImageIcon(subImage));
-			board1.getButtons()[i + 1][9].setIcon(new ImageIcon(subImage));
-		}
-		
-		for(int i = 0; i < 4; i++) {
-			subImage = ship4.getSubimage(0, 50 * i, 50, 50);
-			board1.getButtons()[i + 1][10].setIcon(new ImageIcon(subImage));
-		}
-
+		controlBoard1.randomShipOrganization();
+		setShipsImage();
 		constraints.gridx=1;
 		constraints.gridy=1;
 		constraints.gridwidth=1;
@@ -159,7 +148,64 @@ public class BattleshipGUI extends JFrame {
 		add(showBoard, constraints);
 	}
 	
-	public class Listener extends MouseAdapter implements ActionListener {
+	
+	
+	private void setShipsImage() {
+		Ship[] ships = controlBoard1.getShips();
+		BufferedImage image = null;
+		
+		for(int i = 0; i < 10; i++) {
+			
+			Ship ship = ships[i];
+			int[][] shipPosition = ship.getPosition();
+			
+			switch(ship.getSize()) {
+			case 1:
+				image = ship1;
+				break;
+			case 2:
+				image = ship.isVertical()? ship2 : ship2H;
+				break;
+			case 3:
+				image = ship.isVertical()? ship3 : ship3H;
+				break;
+			case 4:
+				image = ship.isVertical()? ship4 : ship4H;
+				break;
+			}
+			
+			for(int j = 0; j < ship.getSize(); j++) {
+				int x = shipPosition[j][0];
+				int y = shipPosition[j][1];
+				subImage = ship.isVertical()? image.getSubimage(0, 50 * j, 50, 50) : image.getSubimage(50 * j, 0, 50, 50);
+				board1.getButtons()[x][y].setIcon(new ImageIcon(subImage));
+			}
+		}
+		
+		/*
+		for(int i = 0; i < 4; i++) {
+			board1.getButtons()[1][i + 1].setIcon(new ImageIcon(ship1));
+		}
+		for(int i = 0; i < 2; i++) {
+			subImage = ship2.getSubimage(0, 50 * i, 50, 50);
+			board1.getButtons()[i + 1][5].setIcon(new ImageIcon(subImage));
+			board1.getButtons()[i + 1][6].setIcon(new ImageIcon(subImage));
+			board1.getButtons()[i + 1][7].setIcon(new ImageIcon(subImage));
+		}
+		
+		for(int i = 0; i < 3; i++) {
+			subImage = ship3.getSubimage(0, 50 * i, 50, 50);
+			board1.getButtons()[i + 1][8].setIcon(new ImageIcon(subImage));
+			board1.getButtons()[i + 1][9].setIcon(new ImageIcon(subImage));
+		}
+		
+		for(int i = 0; i < 4; i++) {
+			subImage = ship4.getSubimage(0, 50 * i, 50, 50);
+			board1.getButtons()[i + 1][10].setIcon(new ImageIcon(subImage));
+		}*/
+	}
+	
+	private class Listener extends MouseAdapter implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent event) {

@@ -2,19 +2,21 @@ package battleship;
 
 public class Ship {
 	private int[][] position;
-	public boolean[] damagedParts;
+	private boolean[] damagedParts;
 	private int size;
+	private boolean isVertical;
 	
 	public Ship(int size) {
 		
 		this.position = new int[size][2];
 		this.damagedParts = new boolean[size];
 		this.size = size;
+		this.isVertical = true;
 		
 	}
 	
 	public void setShipPosition(int x, int y, boolean isVertical) {
-		
+		this.isVertical = isVertical;
 		if(isVertical) {
 			if(size + x > 10) {
 				x = 11 - size;
@@ -83,5 +85,11 @@ public class Ship {
 			}
 		}
 		return isSunk;
+	}
+	
+	
+	
+	public boolean isVertical() {
+		return isVertical;
 	}
 }

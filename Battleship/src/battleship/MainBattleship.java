@@ -42,14 +42,15 @@ public class MainBattleship {
 		
 		Board board = new Board();/*
 		board.setShip(3, 8, 9, false);
-		board.setShip(5, 8, 8, true);*/
-		board.setShip(8, 8, 8, true);/*
+		board.setShip(5, 8, 8, true);
+		board.setShip(8, 8, 8, true);
 		System.out.println(board.shoot(5, 5));
 		System.out.println(board.shoot(10, 10));
 		System.out.println(board.shoot(10, 10));
 		System.out.println(board.shoot(8, 8));
 		System.out.println(board.shoot(9, 8));
 		System.out.println(board.shoot(10, 8));*/
+		board.randomShipOrganization();
 		printMatrix(board.board);
 	}
 

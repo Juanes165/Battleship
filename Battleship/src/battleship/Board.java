@@ -1,5 +1,7 @@
 package battleship;
 
+import java.util.Random;
+
 public class Board {
 	private Ship[] ships;
 	public int[][] board;
@@ -80,6 +82,30 @@ public class Board {
 	
 	
 	
+	public void randomShipOrganization() {
+		Random random = new Random();
+		int randomX;
+		int randomY;
+		int vertical;
+		
+		for(int i = 0; i < 10; i++) {
+			Ship ship = ships[i];
+			randomX = random.nextInt(10) + 1;
+			randomY = random.nextInt(10) + 1;
+			vertical = random.nextInt(1);
+
+			while(isThereAShip(ship.getSize(), randomX, randomY, vertical == 1)) {
+				randomX = random.nextInt(10) + 1;
+				randomY = random.nextInt(10) + 1;
+				vertical = random.nextInt(2);
+			}
+			
+			this.setShip(randomX, randomY, i, vertical == 1);
+		}
+	}
+	
+	
+	
 	public boolean shoot(int x, int y) {
 		if(board[x][y] == 1) {
 			for(int i = 0; i < 10; i++) {
@@ -93,5 +119,11 @@ public class Board {
 			board[x][y] = 2;
 		}
 		return false;
+	}
+	
+	
+	
+	public Ship[] getShips(){
+		return ships;
 	}
 }
