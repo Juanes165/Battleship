@@ -55,7 +55,7 @@ public class BattleshipGUI extends JFrame {
 			ship2 = ImageIO.read(new File(ship + "2.png"));
 			ship3 = ImageIO.read(new File(ship + "3.png"));
 			ship4 = ImageIO.read(new File(ship + "4.png"));
-			
+		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "No se encontraron los archivos");
@@ -82,6 +82,7 @@ public class BattleshipGUI extends JFrame {
 		//container y layout
 		this.getContentPane().setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
+		
 		//elementos de control y escucha
 		listener = new Listener();
 		for(int i = 0; i < 11; i++) {
