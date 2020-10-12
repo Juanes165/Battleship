@@ -27,10 +27,16 @@ public class BattleshipGUI extends JFrame {
 	//un game control
 	//jugadores
 	//clase de tablero GUI
-	public static final String ship = "src/images/shoot.png";
+	public static final String shoot = "src/images/shoot.png";
+	public static final String ship = "src/images/";
+	
 	private Listener listener;
 	
 	private BufferedImage bufferedImage = null;
+	private BufferedImage ship1 = null;
+	private BufferedImage ship2 = null;
+	private BufferedImage ship3 = null;
+	private BufferedImage ship4 = null;
 	
 	private Titles title;
 	private Titles ships;
@@ -44,7 +50,12 @@ public class BattleshipGUI extends JFrame {
 	public BattleshipGUI() {
 		
 		try {
-			bufferedImage = ImageIO.read(new File(ship));
+			bufferedImage = ImageIO.read(new File(shoot));
+			ship1 = ImageIO.read(new File(ship + "1.png"));
+			ship2 = ImageIO.read(new File(ship + "2.png"));
+			ship3 = ImageIO.read(new File(ship + "3.png"));
+			ship4 = ImageIO.read(new File(ship + "4.png"));
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "No se encontraron los archivos");
