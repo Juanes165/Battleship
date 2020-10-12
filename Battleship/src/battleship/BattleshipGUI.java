@@ -8,20 +8,32 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 
 public class BattleshipGUI extends JFrame {
 	//un game control
 	//jugadores
 	//clase de tablero GUI
+	public static final String ship = "src/images/shoot.png";
 	private Listener listener;
 	
-	private JLabel title;
-	private JLabel ships;
+	private BufferedImage bufferedImage = null;
+	
+	private Titles title;
+	private Titles ships;
 	private JLabel tableroPosicion;
 	private JLabel tableroPrincipal;
 	private BoardGUI board1, board2;
@@ -30,6 +42,20 @@ public class BattleshipGUI extends JFrame {
 	private Font font;
 	
 	public BattleshipGUI() {
+		
+		try {
+			bufferedImage = ImageIO.read(new File(ship));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, "No se encontraron los archivos");
+		}
+		
+		title = new Titles("BATTLESHIP", 32, Color.WHITE);
+		ships = new Titles("BARCOS", 32, Color.WHITE);
+		board1 = new BoardGUI();
+		board2 = new BoardGUI();
+		exit = new JButton("Salir");
+		showBoard = new JButton("Ver tablero");
 		
 		initGUI();
 		
@@ -47,14 +73,14 @@ public class BattleshipGUI extends JFrame {
 		GridBagConstraints constraints = new GridBagConstraints();
 		//elementos de control y escucha
 		listener = new Listener();
+		for(int i = 0; i < 11; i++) {
+			for(int j = 0; j < 11; j++) {
+				board1.getButtons()[i][j].addActionListener(listener);
+				board2.getButtons()[i][j].addActionListener(listener);
+			}
+		}
 		
 		//botones y labels
-		font = new Font("Helvetica", Font.PLAIN, 20);
-		title = new JLabel("BATTLESHIP");
-		title.setFont(font);
-		title.setPreferredSize(new Dimension(500, 100));
-		title.setBackground(new Color(25,25,25));
-		title.setOpaque(true);
 		constraints.gridx=0;
 		constraints.gridy=0;
 		constraints.gridwidth=3;
@@ -62,12 +88,7 @@ public class BattleshipGUI extends JFrame {
 		constraints.fill=GridBagConstraints.BOTH;
 		add(title, constraints);
 		
-		ships = new JLabel("Aqui van los barcos");
-		ships.setFont(font);
-		ships.setBackground(new Color(100, 100, 100));
-		ships.setForeground(new Color(255, 255, 0));
-		ships.setHorizontalAlignment(JLabel.CENTER);
-		ships.setOpaque(true);
+		ships.setPreferredSize(200, 50);
 		constraints.gridx=0;
 		constraints.gridy=1;
 		constraints.gridwidth=1;
@@ -75,8 +96,6 @@ public class BattleshipGUI extends JFrame {
 		constraints.fill=GridBagConstraints.BOTH;
 		add(ships, constraints);
 		
-		board1 = new BoardGUI();
-		board1.setPreferredSize(new Dimension(500, 500));
 		board1.setBorder(new TitledBorder("Tus barcos"));
 		constraints.gridx=1;
 		constraints.gridy=1;
@@ -84,9 +103,7 @@ public class BattleshipGUI extends JFrame {
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.NONE;
 		add(board1, constraints);
-		
-		board2 = new BoardGUI();
-		board2.setPreferredSize(new Dimension(500, 500));
+
 		board2.setBorder(new TitledBorder("Barcos enemigos"));
 		constraints.gridx=2;
 		constraints.gridy=1;
@@ -95,7 +112,6 @@ public class BattleshipGUI extends JFrame {
 		constraints.fill=GridBagConstraints.NONE;
 		add(board2, constraints);
 		
-		exit = new JButton("Salir");
 		constraints.gridx=1;
 		constraints.gridy=2;
 		constraints.gridwidth=1;
@@ -104,18 +120,33 @@ public class BattleshipGUI extends JFrame {
 		constraints.anchor=GridBagConstraints.PAGE_END;
 		add(exit, constraints);
 		
-		showBoard = new JButton("Ver tablero");
 		constraints.anchor=GridBagConstraints.LAST_LINE_END;
 		add(showBoard, constraints);
 	}
 	
-	private class Listener implements ActionListener {
+	public class Listener extends MouseAdapter implements ActionListener {
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent event) {
 			// TODO Auto-generated method stub
+			for(int i = 1; i < 11; i++) {
+				for(int j = 1; j < 11; j++) {
+					if(board2.getButtons()[i][j] == event.getSource()) {
+						System.out.println("El botón " + i + ", " + j + " funciona");
+						ImageIcon shootIcon = new ImageIcon(bufferedImage);
+						board2.getButtons()[i][j].setIcon(shootIcon);
+					}
+
+				}
+			}
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent mouseEvent) {
+			// TODO Auto-generated method stub
+			JButton actionButton = (JButton) mouseEvent.getSource();
 			
 		}
-		
+	
 	}
 }

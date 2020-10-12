@@ -1,6 +1,7 @@
 package battleship;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JLabel;
@@ -15,5 +16,9 @@ public class Titles extends JLabel {
 			this.setBackground(colorFonto);
 			this.setForeground(Color.black);
 			this.setHorizontalAlignment(JLabel.CENTER);
+	}
+	
+	public void setPreferredSize(int x, int y) {
+		this.setPreferredSize(new Dimension(x, y));
 	}
 }

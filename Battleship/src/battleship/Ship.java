@@ -4,7 +4,7 @@ public class Ship {
 	private int[][] position;
 	public boolean[] damagedParts;
 	private int size;
-	public boolean isSunk;
+	private boolean isSunk;
 	
 	public Ship(int size) {
 		
@@ -77,5 +77,11 @@ public class Ship {
 	
 	public int getSize() {
 		return size;
+	}
+	
+	
+	
+	public boolean isSunk() {
+		return isSunk;
 	}
 }

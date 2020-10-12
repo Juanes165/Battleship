@@ -36,9 +36,32 @@ public class Board {
 	
 	
 	public void shoot(int x, int y) {
-		for(int i = 0; i < 10; i++) {
-			ships[i].shoot(x, y);
+		if(board[x][y] == 1) {
+			for(int i = 0; i < 10; i++) {
+				ships[i].shoot(x, y);
+			}
 		}
 		board[x][y] = 2;
+	}
+	
+	
+	
+	public boolean isThereAShip(Ship ship, int x, int y, boolean isVertical) {
+		boolean thereIsAShip = false;
+		if(isVertical) {
+			for(int i = 0; i < ship.getSize(); i++) {
+				if(board[x][y + i] == 1) {
+					thereIsAShip = true;
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < ship.getSize(); i++) {
+				if(board[x + i][y] == 1) {
+					thereIsAShip = true;
+				}
+			}
+		}
+		return thereIsAShip;
 	}
 }

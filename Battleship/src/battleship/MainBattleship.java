@@ -35,7 +35,7 @@ public class MainBattleship {
 		printMatrix(ship.getPosition());
 		System.out.println("Partes dañadas");
 		System.out.println(Arrays.toString(ship.damagedParts));
-		System.out.println("Está hundido: " + ship.isSunk);
+		System.out.println("Está hundido: " + ship.isSunk());
 		//System.out.println("Barco 2");
 		//printMatrix(ship2.getPosition());
 		
