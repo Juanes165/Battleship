@@ -48,6 +48,23 @@ public class BoardGUI extends JPanel {
 	}
 	
 	
+	
+	public int[] getButtonPosition(JButton button) {
+		int[] position = {0, 0};
+		for(int i = 0; i < 11; i ++) {
+			for(int j = 0; j < 11; j ++) {
+				if(buttons[i][j] == button) {
+					position[0] = i;
+					position[1] = j;
+					return position;
+				}
+			}
+		}
+		return position;
+	}
+	
+	
+	
 	public JButton[][] getButtons() {
 		return buttons;
 	}
