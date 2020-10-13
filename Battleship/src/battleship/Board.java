@@ -5,6 +5,8 @@ import java.util.Random;
 public class Board {
 	private Ship[] ships;
 	public int[][] board;
+	private int j;
+
 	
 	public Board() {
 		board = new int[11][11];
@@ -122,7 +124,17 @@ public class Board {
 	}
 	
 	
-	
+	public boolean allShipsSank() {
+			for(int i = 0; i < 10; i++) {
+				for(int j = 0; j < 10; j++) {
+					if(board[i][j] == 1) {
+					return false;
+				}
+				
+			}
+		}
+		return true;
+	}
 	public Ship[] getShips(){
 		return ships;
 	}
