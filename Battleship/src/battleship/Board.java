@@ -4,9 +4,7 @@ import java.util.Random;
 
 public class Board {
 	private Ship[] ships;
-	public int[][] board;
-	private int j;
-
+	private int[][] board;
 	
 	public Board() {
 		board = new int[11][11];
@@ -20,18 +18,7 @@ public class Board {
 		for(int i = 0; i < 10; i ++) {
 			ships[i] = new Ship(i);
 		}
-		/*
-		ships[0] = new Ship(1);
-		ships[1] = new Ship(1);
-		ships[2] = new Ship(1);
-		ships[3] = new Ship(1);
-		ships[4] = new Ship(2);
-		ships[5] = new Ship(2);
-		ships[6] = new Ship(2);
-		ships[7] = new Ship(3);
-		ships[8] = new Ship(3);
-		ships[9] = new Ship(4);
-		*/
+		
 		for(int i = 1; i < 11; i++) {
 			this.setShip(1, i, i - 1, true);
 		}
@@ -43,7 +30,7 @@ public class Board {
 		Ship ship = ships[shipNumber];
 		int[][] shipPosition = ship.getPosition();
 		
-		if(isThereAShip(ship.getSize(), x, y, isVertical)) {
+		if(thereIsAShip(ship, x, y, isVertical)) {
 			System.out.println("Hay un barco");
 		}
 		else {
@@ -60,26 +47,30 @@ public class Board {
 	
 	
 	
-	public boolean isThereAShip(int size, int x, int y, boolean isVertical) {
+	public boolean thereIsAShip(Ship ship, int x, int y, boolean isVertical) {
 		
 		boolean thereIsAShip = false;
 		if(isVertical) {
-			if(size + x > 10) {
-				x = 11 - size;
+			if(ship.getSize() + x > 10) {
+				x = 11 - ship.getSize();
 			}
-			for(int i = 0; i < size; i++) {
+			for(int i = 0; i < ship.getSize(); i++) {
 				if(board[x + i][y] == 1) {
-					thereIsAShip = true;
+					if(getShipByPosition(x + i, y) != ship) {
+						thereIsAShip = true;
+					}
 				}
 			}
 		}
 		else {
-			if(size + y > 10) {
-				y = 11 - size;
+			if(ship.getSize() + y > 10) {
+				y = 11 - ship.getSize();
 			}
-			for(int i = 0; i < size; i++) {
+			for(int i = 0; i < ship.getSize(); i++) {
 				if(board[x][y + i] == 1) {
-					thereIsAShip = true;
+					if(getShipByPosition(x, y + i) != ship) {
+						thereIsAShip = true;
+					}
 				}
 			}
 		}
@@ -100,7 +91,7 @@ public class Board {
 			randomY = random.nextInt(10) + 1;
 			vertical = random.nextInt(1);
 
-			while(isThereAShip(ship.getSize(), randomX, randomY, vertical == 1)) {
+			while(thereIsAShip(ship, randomX, randomY, vertical == 1)) {
 				randomX = random.nextInt(10) + 1;
 				randomY = random.nextInt(10) + 1;
 				vertical = random.nextInt(2);
@@ -146,20 +137,22 @@ public class Board {
 	
 	
 	public Ship getShipByPosition(int x, int y) {
-		System.out.println("x: " + x + " y: " + y + " numero en el tablero: " + board[x][y]);
 		if(board[x][y] == 1) {
 			for(int i = 0; i < 10; i++) {
 				Ship ship = ships[i];
 				for(int j = 0; j < ship.getSize(); j++) {
 					if(ship.getPosition()[j][0] == x && ship.getPosition()[j][1] == y) {
-						
-						System.out.println(j + " " + ship.getPosition()[j][0]);
-						System.out.println(j + " " + ship.getPosition()[j][1]);
 						return ship;
 					}
 				}
 			}
 		}
 		return null;
+	}
+	
+	
+	
+	public int[][] getBoard() {
+		return board;
 	}
 }
