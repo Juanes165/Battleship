@@ -17,6 +17,10 @@ public class Board {
 		}
 		
 		ships = new Ship[10];
+		for(int i = 0; i < 10; i ++) {
+			ships[i] = new Ship(i);
+		}
+		/*
 		ships[0] = new Ship(1);
 		ships[1] = new Ship(1);
 		ships[2] = new Ship(1);
@@ -27,7 +31,7 @@ public class Board {
 		ships[7] = new Ship(3);
 		ships[8] = new Ship(3);
 		ships[9] = new Ship(4);
-		
+		*/
 		for(int i = 1; i < 11; i++) {
 			this.setShip(1, i, i - 1, true);
 		}
@@ -137,5 +141,25 @@ public class Board {
 	}
 	public Ship[] getShips(){
 		return ships;
+	}
+	
+	
+	
+	public Ship getShipByPosition(int x, int y) {
+		System.out.println("x: " + x + " y: " + y + " numero en el tablero: " + board[x][y]);
+		if(board[x][y] == 1) {
+			for(int i = 0; i < 10; i++) {
+				Ship ship = ships[i];
+				for(int j = 0; j < ship.getSize(); j++) {
+					if(ship.getPosition()[j][0] == x && ship.getPosition()[j][1] == y) {
+						
+						System.out.println(j + " " + ship.getPosition()[j][0]);
+						System.out.println(j + " " + ship.getPosition()[j][1]);
+						return ship;
+					}
+				}
+			}
+		}
+		return null;
 	}
 }

@@ -51,7 +51,7 @@ public class MainBattleship {
 		System.out.println(board.shoot(9, 8));
 		System.out.println(board.shoot(10, 8));*/
 		board.randomShipOrganization();
-		printMatrix(board.board);
+		//printMatrix(board.board);
 	}
 
 	public static void printMatrix(int[][] matrix) {
