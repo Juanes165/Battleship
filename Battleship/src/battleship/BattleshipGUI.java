@@ -53,6 +53,8 @@ public class BattleshipGUI extends JFrame {
 	private Titles ships;
 	private BoardGUI board1, board2;
 	private JButton exit, showBoard, randomOrganization, play;
+	private JFrame Myself = this;
+	private WindowHelp help = new WindowHelp(Myself);
 	
 	private Font font;
 	
@@ -180,7 +182,10 @@ public class BattleshipGUI extends JFrame {
 	}
 	
 	
-	
+	public GameControl getGameControl() {
+		return gameControl;
+	}
+
 	private void setShipsImage() {
 		Ship[] ships = controlBoard1.getShips();
 		BufferedImage image = null;
@@ -264,6 +269,8 @@ public class BattleshipGUI extends JFrame {
 				System.exit(0);
 			}
 			if(event.getSource() == showBoard) {
+				help.setVisible(true);
+				Myself.setEnabled(false);
 				
 			}
 			if(event.getSource() == randomOrganization) {
