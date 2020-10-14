@@ -46,19 +46,25 @@ public class GameControl {
 			
 		}
 	
+	
+	
 	public void startGame() {
 		board2.randomShipOrganization();
 		setGameState(1);	
 	}
 
 
+	
 	public int getGameState() {
 		return gameState;
 	}
 
+	
+	
 	public void setGameState(int gameState) {
 		this.gameState = gameState;
 	}
+	
 	
 	
 	public Board getBoard1() {

@@ -137,7 +137,7 @@ public class Board {
 	
 	
 	public Ship getShipByPosition(int x, int y) {
-		if(board[x][y] == 1) {
+		if(board[x][y] == 1 || board[x][y] == 3) {
 			for(int i = 0; i < 10; i++) {
 				Ship ship = ships[i];
 				for(int j = 0; j < ship.getSize(); j++) {

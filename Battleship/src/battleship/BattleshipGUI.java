@@ -31,11 +31,13 @@ public class BattleshipGUI extends JFrame {
 	public static final String shipShootedImg = "src/images/shipShooted.png";
 	public static final String shipImg = "src/images/";
 	public static final String seaImg = "src/images/sea.png";
+	public static final String sunkShipImg = "src/images/sunkShip.png";
 	
 	private Listener listener;
 	
 	private BufferedImage shoot = null;
 	private BufferedImage shipShooted = null;
+	private BufferedImage sunkShip = null;
 	private BufferedImage sea = null;
 	private BufferedImage ship1 = null;
 	private BufferedImage ship1H = null;
@@ -59,8 +61,10 @@ public class BattleshipGUI extends JFrame {
 	public BattleshipGUI() {
 		
 		try {
+			
 			shoot = ImageIO.read(new File(shootImg));
 			shipShooted = ImageIO.read(new File(shipShootedImg));
+			sunkShip = ImageIO.read(new File(sunkShipImg));
 			sea = ImageIO.read(new File(seaImg));
 			ship1 = ImageIO.read(new File(shipImg + "1.png"));
 			ship2 = ImageIO.read(new File(shipImg + "2.png"));
@@ -71,31 +75,33 @@ public class BattleshipGUI extends JFrame {
 			ship3H = ImageIO.read(new File(shipImg + "3H.png"));
 			ship4H = ImageIO.read(new File(shipImg + "4H.png"));
 		
+			gameControl = new GameControl();
+			controlBoard1 = gameControl.getBoard1();
+			controlBoard2 = gameControl.getBoard2();
+			title = new Titles("BATTLESHIP", 32, Color.WHITE);
+			ships = new Titles("BARCOS", 32, Color.WHITE);
+			board1 = new BoardGUI();
+			board2 = new BoardGUI();
+			exit = new JButton("Salir");
+			showBoard = new JButton("Ver tablero");
+			randomOrganization = new JButton("¡Al azar!");
+			play = new JButton("Jugar");
+			
+			initGUI();
+			
+			pack();
+			this.setTitle("Battleship");
+			this.setResizable(true);
+			this.setLocationRelativeTo(null);
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.setVisible(true);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "No se encontraron los archivos");
 		}
 		
-		gameControl = new GameControl();
-		controlBoard1 = gameControl.getBoard1();
-		controlBoard2 = gameControl.getBoard2();
-		title = new Titles("BATTLESHIP", 32, Color.WHITE);
-		ships = new Titles("BARCOS", 32, Color.WHITE);
-		board1 = new BoardGUI();
-		board2 = new BoardGUI();
-		exit = new JButton("Salir");
-		showBoard = new JButton("Ver tablero");
-		randomOrganization = new JButton("¡Al azar!");
-		play = new JButton("Jugar");
 		
-		initGUI();
-		
-		pack();
-		this.setTitle("Battleship");
-		this.setResizable(true);
-		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setVisible(true);
 	}
 	
 	private void initGUI() {
@@ -232,7 +238,7 @@ public class BattleshipGUI extends JFrame {
 	
 	
 	private void overlapIcon(JButton button) {
-		// Assumed that these are non-null
+
 		BufferedImage newIcon = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
 		ImageIcon initialIcon = (ImageIcon) button.getIcon();
 		BufferedImage initialImage = (BufferedImage) initialIcon.getImage();
@@ -248,10 +254,46 @@ public class BattleshipGUI extends JFrame {
 	
 	
 	
-	private void playerShoot() {
+	private void setSunkShipImg(int x, int y, Board controlBoard, BoardGUI board) {
+		Ship ship = controlBoard.getShipByPosition(x, y);
+		int[][] shipPosition = ship.getPosition();
+		JButton[][] buttons = board.getButtons();
 		
+		for(int i = 0; i < ship.getSize(); i++) {
+			buttons[shipPosition[i][0]][shipPosition[i][1]].setIcon(new ImageIcon(sunkShip));
+		}
 	}
 	
+	
+	
+	private boolean playerShoot(int x, int y) {
+		int[] shot;
+
+		if(controlBoard2.getBoard()[x][y] == 0) {
+			//configuracion del icono de disparo
+			ImageIcon shootIcon = new ImageIcon(shoot);
+			board2.getButtons()[x][y].setIcon(shootIcon);
+			//control del disparo
+			controlBoard2.shoot(x, y);
+			return false;
+		}
+		else if(controlBoard2.getBoard()[x][y] == 1) {
+			//configuracion del icono de disparo
+			ImageIcon shootIcon = new ImageIcon(shipShooted);
+			board2.getButtons()[x][y].setIcon(shootIcon);
+			
+			//control del disparo y retorna verdadero si se ha hundido un barco
+			if(controlBoard2.shoot(x, y)) {
+				setSunkShipImg(x, y, controlBoard2, board2);
+				return true;
+			}
+			
+			return false;
+		}
+		return false;
+	}
+
+
 	
 	
 	private class Listener implements ActionListener, MouseListener {
@@ -280,6 +322,8 @@ public class BattleshipGUI extends JFrame {
 			for(int i = 1; i < 11; i++) {
 				for(int j = 1; j < 11; j++) {
 					if(board2.getButtons()[i][j] == event.getSource() && gameControl.getGameState() == 1) {
+						playerShoot(i, j);
+						/*
 						if(controlBoard2.getBoard()[i][j] == 0) {
 							ImageIcon shootIcon = new ImageIcon(shoot);
 							board2.getButtons()[i][j].setIcon(shootIcon);
@@ -290,7 +334,7 @@ public class BattleshipGUI extends JFrame {
 							
 							gameControl.setGameState(2);
 							shot = gameControl.emulateShoot();
-							controlBoard1.shoot(shot[0], shot[1]);
+							//controlBoard1.shoot(shot[0], shot[1]);
 							
 							if(controlBoard1.getBoard()[shot[0]][shot[1]] == 3) {
 								overlapIcon(board1.getButtons()[shot[0]][shot[1]]);
@@ -325,9 +369,8 @@ public class BattleshipGUI extends JFrame {
 									gameControl.setGameState(1);
 								}
 							}
-						}				
+						}	*/	
 					}
-
 				}
 			}
 		}

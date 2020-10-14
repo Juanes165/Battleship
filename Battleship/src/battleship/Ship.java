@@ -7,6 +7,7 @@ public class Ship {
 	private boolean isVertical;
 	private int shipNumber;
 	
+	
 	public Ship(int number) {
 		
 		if(number < 4) {
@@ -28,6 +29,8 @@ public class Ship {
 		this.isVertical = true;
 		
 	}
+	
+	
 	
 	public void setShipPosition(int x, int y, boolean isVertical) {
 		this.isVertical = isVertical;
@@ -82,6 +85,7 @@ public class Ship {
 	public int[][] getPosition() {
 		return position;
 	}
+	
 	
 	
 	public int getSize() {
