@@ -15,6 +15,7 @@ public class BoardGUI extends JPanel {
 
 	//Atributos
 	private JButton[][] buttons;
+	private final String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 
 	
 	public BoardGUI() {
@@ -39,7 +40,7 @@ public class BoardGUI extends JPanel {
 		}
 		
 		for(int i = 1; i < 11; i++) {
-			buttons[0][i].setText(Integer.toString(i));
+			buttons[0][i].setText(letters[i - 1]);
 			buttons[0][i].setBackground(new Color(255, 255, 255));
 			buttons[i][0].setText(Integer.toString(i));
 			buttons[i][0].setBackground(new Color(255, 255, 255));
