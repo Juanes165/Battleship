@@ -14,7 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-public class WindowHelp extends JFrame {
+public class helpWindow extends JFrame {
 
 	public static final String shootImg = "src/images/shoot.png";
 	public static final String shipShootedImg = "src/images/shipShooted.png";
@@ -22,11 +22,11 @@ public class WindowHelp extends JFrame {
 	public static final String seaImg = "src/images/sea.png";
 	
 	private JButton comeback;
-	private BoardGUI board; // Tablero enemigo.
+	private BoardGUI board;
 	private Listeners listener;
-	private JFrame battleshipgui;
+	private BattleshipGUI mainWindow;
 	private GameControl gameControl;
-	private Board controlBoard2;
+	private Board controlBoard;
 	
 
 	private BufferedImage sea = null;
@@ -41,39 +41,63 @@ public class WindowHelp extends JFrame {
 	private BufferedImage subImage = null;
 	
 	
-	public WindowHelp(JFrame battleshipgui) {
+	public helpWindow(BattleshipGUI mainWindow) {
 		try {
+			sea = ImageIO.read(new File(seaImg));
+			ship1 = ImageIO.read(new File(shipImg + "1.png"));
+			ship2 = ImageIO.read(new File(shipImg + "2.png"));
+			ship3 = ImageIO.read(new File(shipImg + "3.png"));
+			ship4 = ImageIO.read(new File(shipImg + "4.png"));
+			ship1H = ImageIO.read(new File(shipImg + "1H.png"));
+			ship2H = ImageIO.read(new File(shipImg + "2H.png"));
+			ship3H = ImageIO.read(new File(shipImg + "3H.png"));
+			ship4H = ImageIO.read(new File(shipImg + "4H.png"));
 		
-		sea = ImageIO.read(new File(seaImg));
-		ship1 = ImageIO.read(new File(shipImg + "1.png"));
-		ship2 = ImageIO.read(new File(shipImg + "2.png"));
-		ship3 = ImageIO.read(new File(shipImg + "3.png"));
-		ship4 = ImageIO.read(new File(shipImg + "4.png"));
-		ship1H = ImageIO.read(new File(shipImg + "1H.png"));
-		ship2H = ImageIO.read(new File(shipImg + "2H.png"));
-		ship3H = ImageIO.read(new File(shipImg + "3H.png"));
-		ship4H = ImageIO.read(new File(shipImg + "4H.png"));
+			gameControl =  mainWindow.getGameControl();
+			controlBoard = gameControl.getBoard2();
+			board = new BoardGUI();
 			
-		this.battleshipgui=battleshipgui;
-	
-		gameControl =  battleshipgui.getGameControl();
-		controlBoard = .getBoard2();
-	
-		initGUI();
-		board = new BoardGUI();
-		
-		//Default window.
-		this.setResizable(true);
-		this.setLocationRelativeTo(null);
-		this.setUndecorated(true);
-		this.setVisible(true);
-		pack();
+			this.mainWindow = mainWindow;
+			
+			initGUI();
+			
+			//Default window.
+			this.setResizable(false);
+			this.setLocationRelativeTo(null);
+			this.setUndecorated(false);
+			pack();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "No se encontraron los archivos");
 
 		}
 	}
+	
+
+
+	private void initGUI(){
+		
+		//Escucha.
+		listener = new Listeners();
+		
+		//Componentes graficos
+		
+		Titles title = new Titles ("Flota enemiga", 27, Color.black);
+		add(title, BorderLayout.NORTH);
+
+		setShipsImage();
+		add(board, BorderLayout.CENTER);
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		comeback = new JButton("Regresar");
+		comeback.addActionListener(listener);
+		add(comeback,BorderLayout.SOUTH);
+		
+	}
+	
+	
+	
 	private void setShipsImage() {
 		Ship[] ships = controlBoard.getShips();
 		BufferedImage image = null;
@@ -112,34 +136,16 @@ public class WindowHelp extends JFrame {
 			}
 		}
 	}
-
-
-	private void initGUI(){
-		
-		//window container and layout.
-		
-		//Create listener.
-		listener = new Listeners();
-		
-		//Create Gui.
-		//controlBoard2 = gameControl.getBoard2();
-		Titles title = new Titles ("Flota enemiga", 27, Color.black);
-		add(title, BorderLayout.NORTH);
-		//setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		comeback = new JButton("Regresar");
-		comeback.addActionListener(listener);
-		add(comeback,BorderLayout.SOUTH);
-		
-		
-	}
+	
+	
+	
 	private class Listeners implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			// TODO Auto-generated method stub
 			//event button comeback.
-			battleshipgui.setEnabled(true);
+			mainWindow.setEnabled(true);
 			setVisible(false);
 		}
 		

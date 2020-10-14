@@ -37,14 +37,22 @@ public class GameControl {
 	
 	
 	public void winMatch() {
-		if(board1.allShipsSank() == true) {			
-				setGameState(4);
-			}
-			if(board2.allShipsSank() == true) {			
-				setGameState(3);
-			}
-			
+		if(board2.allShipsSank()) {			
+			setGameState(3);
 		}
+		if(board1.allShipsSank()) {			
+			setGameState(4);
+		}	
+	}
+	
+	
+	
+	public void restartGame() {
+		board1 = new Board();
+		board2 = new Board();
+		setGameState(0);
+		board2.randomShipOrganization();
+	}
 	
 	
 	
@@ -52,8 +60,8 @@ public class GameControl {
 		board2.randomShipOrganization();
 		setGameState(1);	
 	}
-
-
+	
+	
 	
 	public int getGameState() {
 		return gameState;

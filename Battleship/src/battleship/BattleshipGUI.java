@@ -1,28 +1,22 @@
 package battleship;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 
@@ -54,11 +48,9 @@ public class BattleshipGUI extends JFrame {
 	private Titles title;
 	private Titles ships;
 	private BoardGUI board1, board2;
-	private JButton exit, showBoard, randomOrganization, play;
-	private JFrame Myself = this;
-	private WindowHelp help = new WindowHelp(Myself);
-	
-	private Font font;
+	private JButton exit, showBoard, randomOrganization, play, reset;
+	private BattleshipGUI mySelf;
+	private helpWindow help;
 	
 	public BattleshipGUI() {
 		
@@ -78,6 +70,7 @@ public class BattleshipGUI extends JFrame {
 			ship4H = ImageIO.read(new File(shipImg + "4H.png"));
 		
 			gameControl = new GameControl();
+			gameControl.startGame();
 			controlBoard1 = gameControl.getBoard1();
 			controlBoard2 = gameControl.getBoard2();
 			title = new Titles("BATTLESHIP", 32, Color.WHITE);
@@ -88,6 +81,10 @@ public class BattleshipGUI extends JFrame {
 			showBoard = new JButton("Ver tablero");
 			randomOrganization = new JButton("¡Al azar!");
 			play = new JButton("Jugar");
+			reset = new JButton("Reset");
+			
+			mySelf = this;
+			help = new helpWindow(mySelf);
 			
 			initGUI();
 			
@@ -100,7 +97,7 @@ public class BattleshipGUI extends JFrame {
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			JOptionPane.showMessageDialog(null, "No se encontraron los archivos");
+			JOptionPane.showMessageDialog(null, "No se encontraron los archivos necesarios para ejecutar el juego");
 		}
 		
 		
@@ -123,6 +120,7 @@ public class BattleshipGUI extends JFrame {
 		showBoard.addActionListener(listener);
 		randomOrganization.addActionListener(listener);
 		play.addActionListener(listener);
+		reset.addActionListener(listener);
 		
 		//botones y labels
 		constraints.gridx=0;
@@ -170,28 +168,34 @@ public class BattleshipGUI extends JFrame {
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.NONE;
 		constraints.anchor=GridBagConstraints.PAGE_END;
+		showBoard.setVisible(false);
 		add(showBoard, constraints);
 		
 		constraints.anchor=GridBagConstraints.LAST_LINE_END;
-		add(exit, constraints);
+		add(play, constraints);
+		reset.setVisible(false);
+		add(reset, constraints);
 		
 		
-		constraints.anchor=GridBagConstraints.LAST_LINE_START;
+		constraints.anchor=GridBagConstraints.PAGE_END;
 		add(randomOrganization, constraints);
 		
 		constraints.gridx=2;
 		constraints.gridy=2;
 		constraints.gridwidth=1;
 		constraints.gridheight=1;
-		constraints.anchor=GridBagConstraints.LAST_LINE_START;
-		add(play, constraints);
+		constraints.anchor=GridBagConstraints.PAGE_END;
+		add(exit, constraints);
 	}
+	
 	
 	
 	public GameControl getGameControl() {
 		return gameControl;
 	}
 
+	
+	
 	private void setShipsImage() {
 		Ship[] ships = controlBoard1.getShips();
 		BufferedImage image = null;
@@ -231,27 +235,21 @@ public class BattleshipGUI extends JFrame {
 		}
 	}
 	
-	public static void printMatrix(int[][] matrix) {
-	    for (int row = 0; row < matrix.length; row++) {
-	        for (int col = 0; col < matrix[row].length; col++) {
-	            System.out.printf("%4d", matrix[row][col]);
-	        }
-	        System.out.println();
-	    }
-	}
-	
 	
 	
 	private void overlapIcon(JButton button) {
 
 		BufferedImage newIcon = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
+		
 		ImageIcon initialIcon = (ImageIcon) button.getIcon();
 		BufferedImage initialImage = (BufferedImage) initialIcon.getImage();
+		
+		Image shootImg = (Image) shipShooted;
 		
 		Graphics g = newIcon.getGraphics();
 		
 		g.drawImage(initialImage, 0, 0, null);
-		g.drawImage(shipShooted, 0, 0, null);
+		g.drawImage(shootImg, 0, 0, null);
 		g.dispose();
 		
 		button.setIcon(new ImageIcon(newIcon));
@@ -272,8 +270,7 @@ public class BattleshipGUI extends JFrame {
 	
 	
 	private boolean playerShoot(int x, int y) {
-		int[] shot;
-
+		
 		if(controlBoard2.getBoard()[x][y] == 0) {
 			//configuracion del icono de disparo
 			ImageIcon shootIcon = new ImageIcon(shoot);
@@ -300,9 +297,78 @@ public class BattleshipGUI extends JFrame {
 
 
 	
+	private void enemyShoot() {
+		int[] shot;
+		
+		gameControl.setGameState(2);
+		shot = gameControl.emulateShoot();
+		
+		if(controlBoard1.getBoard()[shot[0]][shot[1]] == 3) {
+			
+			if(controlBoard1.getShipByPosition(shot[0], shot[1]).isSunk()) {
+				setSunkShipImg(shot[0], shot[1], controlBoard1, board1);
+				enemyShoot();
+			}
+			else {
+				overlapIcon(board1.getButtons()[shot[0]][shot[1]]);
+			}
+			gameControl.setGameState(1);
+		}
+		else if(controlBoard1.getBoard()[shot[0]][shot[1]] == 2){
+			
+			board1.getButtons()[shot[0]][shot[1]].setIcon(new ImageIcon(shoot));
+			gameControl.setGameState(1);
+			
+		}
+	}
+	
+	
+	
+	private void restartGame() {
+		gameControl.setGameState(0);
+		gameControl.restartGame();
+		controlBoard1 = gameControl.getBoard1();
+		controlBoard2 = gameControl.getBoard2();
+		setShipsImage();
+		for(int i = 1; i < 11; i++) {
+			for(int j = 1; j < 11; j++) {
+				board2.getButtons()[i][j].setIcon(new ImageIcon(sea));
+			}
+		}
+		help = new helpWindow(mySelf);
+		randomOrganization.setVisible(true);
+		play.setVisible(true);
+		reset.setVisible(false);
+		showBoard.setVisible(false);
+	}
+	
+	
+	
+	private void gameOver() {
+		gameControl.winMatch();
+		if(gameControl.getGameState() == 3) {
+			if (JOptionPane.showConfirmDialog(null, "Has ganado \n ¿Quieres jugar de nuevo?", "FELICIDADES", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				restartGame();
+			} else {
+			    System.exit(0);
+			}
+		}
+		else if(gameControl.getGameState() == 4) {
+			if (JOptionPane.showConfirmDialog(null, "Has perdido \n ¿Quieres jugar de nuevo?", "LO SENTIMOS", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				restartGame();
+			} else {
+			    System.exit(0);
+			}
+		}
+	}
+	
+	
 	
 	private class Listener implements ActionListener, MouseListener {
 
+		private Ship selectedShip = null;
+		private int[] mousePosition;
+		
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			// TODO Auto-generated method stub
@@ -310,9 +376,9 @@ public class BattleshipGUI extends JFrame {
 			if(event.getSource() == exit) {
 				System.exit(0);
 			}
-			if(event.getSource() == showBoard) {
+			if(event.getSource() == showBoard && gameControl.getGameState() != 0) {
 				help.setVisible(true);
-				Myself.setEnabled(false);
+				mySelf.setEnabled(false);
 				
 			}
 			if(event.getSource() == randomOrganization) {
@@ -320,63 +386,25 @@ public class BattleshipGUI extends JFrame {
 				setShipsImage();
 			}
 			if(event.getSource() == play) {
-				gameControl.startGame();
-				printMatrix(gameControl.getBoard2().getBoard());
+				gameControl.setGameState(1);
 				randomOrganization.setVisible(false);
+				showBoard.setVisible(true);
+				play.setVisible(false);
+				reset.setVisible(true);
+			}
+			if(event.getSource() == reset) {
+				restartGame();
 			}
 			
 			int[] shot;
 			for(int i = 1; i < 11; i++) {
 				for(int j = 1; j < 11; j++) {
 					if(board2.getButtons()[i][j] == event.getSource() && gameControl.getGameState() == 1) {
-						playerShoot(i, j);
-						/*
-						if(controlBoard2.getBoard()[i][j] == 0) {
-							ImageIcon shootIcon = new ImageIcon(shoot);
-							board2.getButtons()[i][j].setIcon(shootIcon);
-							controlBoard2.shoot(i, j);
-							
-							printMatrix(gameControl.getBoard2().getBoard());
-							System.out.println();
-							
-							gameControl.setGameState(2);
-							shot = gameControl.emulateShoot();
-							//controlBoard1.shoot(shot[0], shot[1]);
-							
-							if(controlBoard1.getBoard()[shot[0]][shot[1]] == 3) {
-								overlapIcon(board1.getButtons()[shot[0]][shot[1]]);
-								//board1.getButtons()[shot[0]][shot[1]].setIcon(new ImageIcon(shipShooted));
-								gameControl.setGameState(1);
-							}
-							else {
-								board1.getButtons()[shot[0]][shot[1]].setIcon(new ImageIcon(shoot));
-								gameControl.setGameState(1);
-							}
+						if(!playerShoot(i, j)) {
+							gameOver();
+							enemyShoot();
 						}
-						else if(controlBoard2.getBoard()[i][j] == 1) {
-							ImageIcon shootIcon = new ImageIcon(shipShooted);
-							board2.getButtons()[i][j].setIcon(shootIcon);
-							printMatrix(gameControl.getBoard2().getBoard());
-							System.out.println();
-							
-							if(controlBoard2.shoot(i, j)) {
-								gameControl.setGameState(1);
-							}
-							else {
-								gameControl.setGameState(2);
-								shot = gameControl.emulateShoot();
-								controlBoard1.shoot(shot[0], shot[1]);
-								
-								if(controlBoard1.getBoard()[shot[0]][shot[1]] == 3) {
-									board1.getButtons()[shot[0]][shot[1]].setIcon(new ImageIcon(shipShooted));
-									gameControl.setGameState(1);
-								}
-								else {
-									board1.getButtons()[shot[0]][shot[1]].setIcon(new ImageIcon(shoot));
-									gameControl.setGameState(1);
-								}
-							}
-						}	*/	
+						gameOver();
 					}
 				}
 			}
@@ -385,52 +413,57 @@ public class BattleshipGUI extends JFrame {
 		@Override
 		public void mouseClicked(MouseEvent mouseEvent) {
 			// TODO Auto-generated method stub
-			JButton actionButton = (JButton) mouseEvent.getSource();
-			if(mouseEvent.getButton() == 3) {
-				
+			if(gameControl.getGameState() == 0) {
+				JButton actionButton = (JButton) mouseEvent.getSource();
+				if(mouseEvent.getButton() == 3) {
+					
+					JButton clickedButton = (JButton) mouseEvent.getSource(); //objeto boton sobre el que se hace click
+					
+					int[] buttonPosition = board1.getButtonPosition(clickedButton); //position del boton en la matriz
+					
+					Ship ship = controlBoard1.getShipByPosition(buttonPosition[0], buttonPosition[1]); //barco en esa posicion
+					
+					if(ship != null && !controlBoard1.thereIsAShip(ship, mousePosition[0], mousePosition[1], ship.isVertical())) {
+						controlBoard1.setShip(mousePosition[0], mousePosition[1], selectedShip.getShipNumber(), !selectedShip.isVertical());
+					}
+					setShipsImage();
+				}
+			}
+		}
+		
+		@Override
+		public void mousePressed(MouseEvent mouseEvent) {
+			// TODO Auto-generated method stub
+			if(gameControl.getGameState() == 0) {
 				JButton clickedButton = (JButton) mouseEvent.getSource(); //objeto boton sobre el que se hace click
 				
 				int[] buttonPosition = board1.getButtonPosition(clickedButton); //position del boton en la matriz
 				
 				Ship ship = controlBoard1.getShipByPosition(buttonPosition[0], buttonPosition[1]); //barco en esa posicion
-				
-				if(ship != null && !controlBoard1.thereIsAShip(ship, mousePosition[0], mousePosition[1], ship.isVertical())) {
-					controlBoard1.setShip(mousePosition[0], mousePosition[1], selectedShip.getShipNumber(), !selectedShip.isVertical());
-				}
-				setShipsImage();
+				selectedShip = ship;
 			}
-		}
-		
-		
-		Ship selectedShip = null;
-		int[] mousePosition;
-		@Override
-		public void mousePressed(MouseEvent mouseEvent) {
-			// TODO Auto-generated method stub
-			JButton clickedButton = (JButton) mouseEvent.getSource(); //objeto boton sobre el que se hace click
-			
-			int[] buttonPosition = board1.getButtonPosition(clickedButton); //position del boton en la matriz
-			
-			Ship ship = controlBoard1.getShipByPosition(buttonPosition[0], buttonPosition[1]); //barco en esa posicion
-			selectedShip = ship;
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent mouseEvent) {
 			// TODO Auto-generated method stub
-			if(selectedShip != null && !controlBoard1.thereIsAShip(selectedShip, mousePosition[0], mousePosition[1], selectedShip.isVertical())) {
-				controlBoard1.setShip(mousePosition[0], mousePosition[1], selectedShip.getShipNumber(), selectedShip.isVertical());
+			if(gameControl.getGameState() == 0) {
+				if(selectedShip != null && !controlBoard1.thereIsAShip(selectedShip, mousePosition[0], mousePosition[1], selectedShip.isVertical())) {
+					controlBoard1.setShip(mousePosition[0], mousePosition[1], selectedShip.getShipNumber(), selectedShip.isVertical());
+				}
+				setShipsImage();
 			}
-			setShipsImage();
 		}
 
 		@Override
 		public void mouseEntered(MouseEvent mouseEvent) {
 			// TODO Auto-generated method stub
-			JButton enteredButton = (JButton) mouseEvent.getSource();
-			int[] buttonPosition = board1.getButtonPosition(enteredButton);
-			
-			mousePosition = buttonPosition;
+			if(gameControl.getGameState() == 0) {
+				JButton enteredButton = (JButton) mouseEvent.getSource();
+				int[] buttonPosition = board1.getButtonPosition(enteredButton);
+				
+				mousePosition = buttonPosition;
+			}
 		}
 
 		@Override
